@@ -7,19 +7,17 @@ public class PlayerCharacterTurnCombatState : CombatState
 
     public override void OnEnter()
     {
-        Debug.Log("Entering PlayerCharacterTurnCombatState.");
         StateMachine.Input.PressedConfirm += this.OnPressedConfirm;
     }
 
     public override void OnExit()
     {
+        this.StateMachine.Turn.EndTurn();
         StateMachine.Input.PressedConfirm -= this.OnPressedConfirm;
-        Debug.Log("Exiting PlayerCharacterTurnCombatState.");
     }
 
     private void OnPressedConfirm()
     {
-        Debug.Log("Confirm pressed.");
         this.TransitionToNextTurn();
     }
 

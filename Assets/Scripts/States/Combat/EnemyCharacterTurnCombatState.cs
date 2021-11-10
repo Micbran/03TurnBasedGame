@@ -7,27 +7,35 @@ public class EnemyCharacterTurnCombatState : CombatState
     public event Action EnemyTurnBegan = delegate { };
     public event Action EnemyTurnEnded = delegate { };
 
-    [SerializeField] float thinkingDuration = 0.5f;
+    private ArtificialIntelligence currentAI = null;
 
     public override void OnEnter()
     {
-        Debug.Log("Entering EnemyCharacterTurnCombatState.");
         this.EnemyTurnBegan?.Invoke();
-        StartCoroutine(this.EnemyThinkingRoutine(this.thinkingDuration));
+        if (this.StateMachine.CurrentActor is EnemyCharacter)
+        {
+            this.currentAI = this.StateMachine.CurrentActor.GetComponent<ArtificialIntelligence>();
+            if (this.currentAI == null)
+            {
+                this.EnemyEndTurn();
+            }
+
+            this.currentAI.Act();
+        }
+    }
+
+    public override void Tick()
+    {
+        if (this.currentAI.TurnFinished)
+        {
+            this.EnemyEndTurn();
+        }
     }
 
     public override void OnExit()
     {
-        Debug.Log("Exiting EnemyCharacterTurnCombatState.");
-    }
-
-    IEnumerator EnemyThinkingRoutine(float pauseDuration)
-    {
-        Debug.Log("Enemy thinking. . . . .");
-        yield return new WaitForSeconds(pauseDuration);
-
-        Debug.Log("Enemy performs action!");
-        this.EnemyEndTurn();
+        this.StateMachine.Turn.EndTurn();
+        this.currentAI = null;
     }
 
     private void EnemyEndTurn()

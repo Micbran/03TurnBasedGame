@@ -3,15 +3,11 @@ using UnityEngine;
 
 public class PickNextActorCombatState : CombatState
 {
-    // probably has access to turn manager
-    // determines next transition Player or Enemy
-
     bool finishPicking = false;
 
     public override void OnEnter()
     {
         this.finishPicking = false;
-        Debug.Log("Entering PickNextActorCombatState.");
     }
 
     public override void Tick()
@@ -19,35 +15,25 @@ public class PickNextActorCombatState : CombatState
         if (!this.finishPicking)
         {
             this.finishPicking = true;
-            StartCoroutine(PickingRoutine());
-        }
-    }
-
-    IEnumerator PickingRoutine()
-    {
-        Debug.Log("Picking next turn. . . . .");
-        yield return new WaitForSeconds(1f);
-
-        Debug.Log("Turn picked!");
-        this.PickNextTurn();
-    }
-
-    private void PickNextTurn()
-    {
-        int randChoice = Random.Range(0, 2); // TODO scrap this later for something proper
-        if (randChoice == 0)
-        {
-            StateMachine.ChangeState<PlayerCharacterTurnCombatState>();
-        }
-        else
-        {
-            StateMachine.ChangeState<EnemyCharacterTurnCombatState>();
+            this.StateMachine.CurrentActor = this.StateMachine.Turn.Peek();
+            Debug.Log($"I choose you, {StateMachine.CurrentActor.Name}!");
+            if (this.StateMachine.CurrentActor is PlayerCharacter)
+            {
+                StateMachine.ChangeState<PlayerCharacterTurnCombatState>();
+            }
+            else if (this.StateMachine.CurrentActor is EnemyCharacter)
+            {
+                StateMachine.ChangeState<EnemyCharacterTurnCombatState>();
+            }
+            else
+            {
+                Debug.Log("WTF???");
+            }
         }
     }
 
     public override void OnExit()
     {
         this.finishPicking = false;
-        Debug.Log("Exiting PickNextActorCombatState.");
     }
 }

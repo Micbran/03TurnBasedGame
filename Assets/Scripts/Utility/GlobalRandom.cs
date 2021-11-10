@@ -7,7 +7,17 @@ public static class GlobalRandom
 
     public static int RandomInt(int max, int min = 1)
     {
-        return random.Next(min, max);
+        return random.Next(min, max + 1);
+    }
+
+    public static int RollDie(Dice die)
+    {
+        int sum = 0;
+        for (int i = 0; i < die.Number; i++)
+        {
+            sum += RandomInt(die.Sides);
+        }
+        return sum;
     }
 
     public static int RandomOddInt(int max)
@@ -36,6 +46,6 @@ public static class GlobalRandom
 
     public static int AttackRoll()
     {
-        return random.Next(1, 20);
+        return random.Next(1, 21);
     }
 }

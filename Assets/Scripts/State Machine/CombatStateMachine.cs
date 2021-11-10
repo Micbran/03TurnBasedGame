@@ -2,14 +2,27 @@ using UnityEngine;
 
 public class CombatStateMachine : StateMachine
 {
-    [SerializeField] InputController input;
+    [SerializeField] private InputController input;
     public InputController Input => this.input;
 
-    [SerializeField] TurnController turn;
+    [SerializeField] private TurnController turn;
     public TurnController Turn => this.turn;
 
-    [SerializeField] LogController log;
+    [SerializeField] private LogController log;
     public LogController Log => this.log;
+
+    private Actor currentActor;
+    public Actor CurrentActor
+    {
+        get
+        {
+            return this.currentActor;
+        }
+        set
+        {
+            this.currentActor = value;
+        }
+    }
 
     private void Start()
     {

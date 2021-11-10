@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 public class InitiativeQueue
 {
@@ -33,6 +34,16 @@ public class InitiativeQueue
         this.actorQueue.RemoveAt(0);
 
         return saveActor;
+    }
+
+    public Actor Peek()
+    {
+        if (this.Count == 0)
+        {
+            return null;
+        }
+
+        return this.actorQueue[0];
     }
 
     public void Clear()
