@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class CombatStateMachine : StateMachine
 {
+    public event Action NewTurnStarted = delegate { };
+
     [SerializeField] private InputController input;
     public InputController Input => this.input;
 
@@ -27,5 +30,10 @@ public class CombatStateMachine : StateMachine
     private void Start()
     {
         this.ChangeState<SetupCombatGameState>();
+    }
+
+    public void TriggerNewTurn()
+    {
+        this.NewTurnStarted?.Invoke();
     }
 }

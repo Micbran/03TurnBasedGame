@@ -5,20 +5,27 @@ public class CombatUIController : MonoBehaviour
 {
     [SerializeField] private Text textUI = null;
     [SerializeField] public CombatStateMachine stateMachine = null;
+    [SerializeField] private PlayerUIManager playerUI = null;
 
 
     private void Awake()
     {
+
     }
 
     private void OnEnable()
     {
-
+        this.stateMachine.NewTurnStarted += OnNewTurnStarted;
     }
 
     private void OnDisable()
     {
+        this.stateMachine.NewTurnStarted -= OnNewTurnStarted;
+    }
 
+    private void OnNewTurnStarted()
+    {
+        this.playerUI.OnNewTurnBegan(this.stateMachine.CurrentActor);
     }
 
     private void Update()

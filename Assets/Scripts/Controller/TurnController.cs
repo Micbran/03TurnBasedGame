@@ -30,7 +30,6 @@ public class TurnController : MonoBehaviour
 
     public Actor Peek()
     {
-        Debug.Log(this.actingEntities.ToString());
         return this.actingEntities.Peek();
     }
 

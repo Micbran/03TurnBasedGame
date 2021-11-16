@@ -16,7 +16,6 @@ public class PickNextActorCombatState : CombatState
         {
             this.finishPicking = true;
             this.StateMachine.CurrentActor = this.StateMachine.Turn.Peek();
-            Debug.Log($"I choose you, {StateMachine.CurrentActor.Name}!");
             if (this.StateMachine.CurrentActor is PlayerCharacter)
             {
                 StateMachine.ChangeState<PlayerCharacterTurnCombatState>();

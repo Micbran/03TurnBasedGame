@@ -19,7 +19,8 @@ public class EnemyCharacterTurnCombatState : CombatState
             {
                 this.EnemyEndTurn();
             }
-
+            this.StateMachine.CurrentActor.StartNewTurn();
+            this.StateMachine.TriggerNewTurn();
             this.currentAI.Act();
         }
     }
@@ -41,6 +42,7 @@ public class EnemyCharacterTurnCombatState : CombatState
     private void EnemyEndTurn()
     {
         EnemyTurnEnded?.Invoke();
+        this.StateMachine.CurrentActor.ActorEndTurn();
         this.StateMachine.ChangeState<PickNextActorCombatState>();
     }
 }

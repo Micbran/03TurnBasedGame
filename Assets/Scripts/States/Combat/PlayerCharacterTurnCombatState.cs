@@ -2,18 +2,21 @@ using UnityEngine;
 
 public class PlayerCharacterTurnCombatState : CombatState
 {
-    // acting entity goes here
-    // and probably some UI
-
     public override void OnEnter()
     {
         StateMachine.Input.PressedConfirm += this.OnPressedConfirm;
+        this.StateMachine.CurrentActor.StartNewTurn();
+        this.StateMachine.TriggerNewTurn();
     }
 
     public override void OnExit()
     {
-        this.StateMachine.Turn.EndTurn();
         StateMachine.Input.PressedConfirm -= this.OnPressedConfirm;
+    }
+
+    public override void Tick()
+    {
+        
     }
 
     private void OnPressedConfirm()
@@ -21,8 +24,10 @@ public class PlayerCharacterTurnCombatState : CombatState
         this.TransitionToNextTurn();
     }
 
-    private void TransitionToNextTurn()
+    public void TransitionToNextTurn()
     {
+        this.StateMachine.Turn.EndTurn();
+        this.StateMachine.CurrentActor.ActorEndTurn();
         this.StateMachine.ChangeState<PickNextActorCombatState>();
     }
 }

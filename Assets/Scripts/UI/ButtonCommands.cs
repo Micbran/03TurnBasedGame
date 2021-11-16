@@ -7,8 +7,7 @@ public class ButtonCommands : MonoBehaviour
     private CombatUIController combatUI = null;
 
     [SerializeField] private Button endTurnButton;
-    [SerializeField] private Button winButton;
-    [SerializeField] private Button loseButton;
+    [SerializeField] private Button centerOnCharacterButton;
 
     private void Awake()
     {
@@ -18,23 +17,13 @@ public class ButtonCommands : MonoBehaviour
     private void OnEnable()
     {
         this.endTurnButton.onClick.AddListener(this.EndTurn);
-        this.winButton.onClick.AddListener(this.TransitionToWin);
-        this.loseButton.onClick.AddListener(this.TransitionToLose);
+        this.centerOnCharacterButton.onClick.AddListener(this.CenterOnCharacter);
     }
 
     private void OnDisable()
     {
         this.endTurnButton.onClick.RemoveListener(this.EndTurn);
-        this.winButton.onClick.RemoveListener(this.TransitionToWin);
-        this.loseButton.onClick.RemoveListener(this.TransitionToLose);
-    }
-
-    private void Update()
-    {
-        bool isPlayerTurn = this.combatUI.stateMachine.CurrentState is PlayerCharacterTurnCombatState;
-        this.endTurnButton.interactable = isPlayerTurn;
-        this.winButton.interactable = isPlayerTurn;
-        this.loseButton.interactable = isPlayerTurn;
+        this.centerOnCharacterButton.onClick.RemoveListener(this.CenterOnCharacter);
     }
 
     public void TransitionToWin()
@@ -49,6 +38,15 @@ public class ButtonCommands : MonoBehaviour
 
     public void EndTurn()
     {
-        this.combatUI.stateMachine.ChangeState<PickNextActorCombatState>();
+        if (this.combatUI.stateMachine.CurrentState is PlayerCharacterTurnCombatState)
+        {
+            PlayerCharacterTurnCombatState currState = this.combatUI.stateMachine.CurrentState as PlayerCharacterTurnCombatState;
+            currState.TransitionToNextTurn();
+        }
+    }
+
+    public void CenterOnCharacter()
+    {
+        Debug.Log("Center on character!");
     }
 }
