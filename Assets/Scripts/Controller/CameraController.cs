@@ -65,4 +65,10 @@ public class CameraController : MonoBehaviour
     {
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + scrollDeltaY * -1 * this.zoomSensitivity, this.maxZoom, this.minZoom);
     }
+
+    public void ShiftToPosition(Vector3 position)
+    {
+        this.baseTransform.position = new Vector3(position.x-10, this.baseTransform.position.y, position.z-10);
+        Camera.main.orthographicSize = this.minZoom;
+    }
 }

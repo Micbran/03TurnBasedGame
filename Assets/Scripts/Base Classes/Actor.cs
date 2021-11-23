@@ -6,14 +6,23 @@ public abstract class Actor : MonoBehaviour
     [SerializeField] ActorStats baseStats;
     [SerializeField] protected string actorName;
     [SerializeField] protected GameObject highlight;
+    [SerializeField] RectTransform targetingIndicator;
 
     protected int health;
+    public int Health => this.health;
+    protected int maxHealth;
+    public int MaxHealth => this.maxHealth;
     protected int defense;
+    public int Defense => this.defense;
     protected int attack;
+    public int Attack => this.attack;
     protected int damageBonus;
+    public int Damage => this.damageBonus;
     protected int damageReduction;
+    public int DamageReduction => this.damageReduction;
     protected int initiativeBonus;
     protected int movement;
+    public int Movement => this.movement;
 
     public int Initiative => this.initiativeScore;
     protected int initiativeScore;
@@ -26,9 +35,13 @@ public abstract class Actor : MonoBehaviour
 
     public string Name => this.actorName;
 
+    private float distanceMovedForAction = 0f;
+    public float DistanceMovedForAction => this.distanceMovedForAction;
+
     protected void Awake()
     {
         this.health = baseStats.Health;
+        this.maxHealth = this.health;
         this.defense = baseStats.Defense;
         this.attack = baseStats.Attack;
         this.damageBonus = baseStats.DamageBonus;
@@ -56,6 +69,17 @@ public abstract class Actor : MonoBehaviour
         this.highlight.SetActive(false);
     }
 
+    public void UpdateTargetingCircle(float newRange)
+    {
+        Vector3 scaleFactor = UIUtilities.ToMetersWorldspace(2000, newRange);
+        this.targetingIndicator.localScale = scaleFactor;
+    }
+
+    public void DisableTargetingCircle()
+    {
+        this.targetingIndicator.localScale = Vector3.zero;
+    }
+
     public bool CheckAction(int actionCost)
     {
         return actionCost <= this.actionPoints;
@@ -64,6 +88,50 @@ public abstract class Actor : MonoBehaviour
     public void TakeAction(int actionCost)
     {
         this.actionPoints -= actionCost;
+    }
+
+    public AttackResult AttackActor(Actor otherActor)
+    {
+        int rollResult = GlobalRandom.AttackRoll();
+        int damageRoll = 0;
+        int finalDamage = 0;
+        if (rollResult + this.Attack >= otherActor.Defense)
+        {
+            damageRoll = GlobalRandom.RollDie(new Dice("1d8"));
+            finalDamage = otherActor.TakeDamage(this.Damage + damageRoll);
+        }
+
+        return new AttackResult()
+        {
+            resultSource = this.Name,
+            resultTarget = otherActor.Name,
+            defense = otherActor.Defense,
+            resultAttack = "1d8",
+            damageBonus = this.Damage,
+            damageReduction = otherActor.DamageReduction,
+            damageRoll = damageRoll,
+            finalDamage = finalDamage,
+            attackRollTotal = rollResult + this.Attack
+        };
+    }
+
+    public int TakeDamage(int damage)
+    {
+        int damageToTake = Mathf.Clamp(damage - this.DamageReduction, 0, 9999);
+        this.health -= damageToTake;
+        this.CheckIfDead();
+        // play feedback
+        return damageToTake;
+    }
+
+    public void CheckIfDead()
+    {
+        if (this.Health <= 0)
+        {
+            Debug.Log($"{this.actorName} has died!");
+            // play feedback
+            // kill actor
+        }
     }
 
     public override string ToString()

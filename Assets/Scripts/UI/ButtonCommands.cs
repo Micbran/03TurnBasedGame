@@ -8,6 +8,7 @@ public class ButtonCommands : MonoBehaviour
 
     [SerializeField] private Button endTurnButton;
     [SerializeField] private Button centerOnCharacterButton;
+    [SerializeField] private CameraController cameraTarget;
 
     private void Awake()
     {
@@ -47,6 +48,7 @@ public class ButtonCommands : MonoBehaviour
 
     public void CenterOnCharacter()
     {
-        Debug.Log("Center on character!");
+        Vector3 actorPos = this.combatUI.stateMachine.CurrentActor.transform.position;
+        this.cameraTarget.ShiftToPosition(actorPos);
     }
 }

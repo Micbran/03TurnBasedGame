@@ -14,7 +14,7 @@ public class LogController : MonoBehaviour
 
     private void Awake()
     {
-        // this.logText.text = "The game has started.";
+        this.logText.text = "The game has started.";
     }
 
     private void UpdateLogText()

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class InputController : MonoBehaviour
 {
@@ -96,18 +98,40 @@ public class InputController : MonoBehaviour
     {
         if (Input.mouseScrollDelta.y != 0)
         {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (this.IsPointerOverUIElement()) return;
             this.CameraZoom?.Invoke(Input.mouseScrollDelta.y);
         }
     }
 
     private void DetectClickedLocation()
     {
-        // Plane or using collider of ground, but for now, generic raycast
-        // But best for now to just pass a ray and allow scripts to decide what they want to do
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             this.ClickedLocation?.Invoke(ray);
         }
+    }
+
+    private bool IsPointerOverUIElement()
+    {
+        List<RaycastResult> eventSystemRaycastResults = this.GetEventSystemRaycastResults();
+        foreach (RaycastResult rr in eventSystemRaycastResults)
+        {
+            if (rr.gameObject.layer == LayerMask.NameToLayer("UI"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<RaycastResult> GetEventSystemRaycastResults()
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = Input.mousePosition;
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        return results;
     }
 }

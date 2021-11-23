@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,16 +17,30 @@ public class CombatUIController : MonoBehaviour
     private void OnEnable()
     {
         this.stateMachine.NewTurnStarted += OnNewTurnStarted;
+        this.stateMachine.ActorUIUpdate += UpdateActorDisplay;
+        this.playerUI.OnActionsUpdated += OnUIActionsUpdated;
     }
 
     private void OnDisable()
     {
         this.stateMachine.NewTurnStarted -= OnNewTurnStarted;
+        this.stateMachine.ActorUIUpdate -= UpdateActorDisplay;
+        this.playerUI.OnActionsUpdated -= OnUIActionsUpdated;
     }
 
     private void OnNewTurnStarted()
     {
         this.playerUI.OnNewTurnBegan(this.stateMachine.CurrentActor);
+    }
+
+    private void OnUIActionsUpdated(List<ActionButton> actionButtons)
+    {
+        this.stateMachine.OnUIActionsUpdated(actionButtons);
+    }
+
+    private void UpdateActorDisplay(Actor currentActor)
+    {
+        this.playerUI.UpdateActorDisplay(currentActor);
     }
 
     private void Update()

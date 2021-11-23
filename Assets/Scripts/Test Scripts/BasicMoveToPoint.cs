@@ -9,6 +9,8 @@ public class BasicMoveToPoint : MonoBehaviour
 
     [SerializeField] private float theta = 1e-15f;
 
+    public LayerMask Collision;
+
     private Transform baseTransform;
     private Rigidbody rb;
     private Vector3 destination;
@@ -48,7 +50,7 @@ public class BasicMoveToPoint : MonoBehaviour
     {
         RaycastHit hitData;
 
-        if (Physics.Raycast(ray, out hitData, 1000f))
+        if (Physics.Raycast(ray, out hitData, 10000f, Collision.value))
         {
             this.destination = hitData.point;
         }

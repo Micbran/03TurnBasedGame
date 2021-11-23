@@ -10,7 +10,6 @@ public class SetupCombatGameState : CombatState
     public override void OnEnter()
     {
         this.finishSetup = false;
-        Debug.Log("Entering SetupCombatGameState.");
     }
 
     public override void Tick()
@@ -24,10 +23,8 @@ public class SetupCombatGameState : CombatState
 
     IEnumerator SetupRoutine()
     {
-        Debug.Log("Setting up game. . . . .");
         yield return new WaitForSeconds(1f);
 
-        Debug.Log("Game setup!");
         this.SetupGame();
     }
 
@@ -39,6 +36,5 @@ public class SetupCombatGameState : CombatState
     public override void OnExit()
     {
         this.finishSetup = false;
-        Debug.Log("Exiting SetupCombatGameState");
     }
 }
