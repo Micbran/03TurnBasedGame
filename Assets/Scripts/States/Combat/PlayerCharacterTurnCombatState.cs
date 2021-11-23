@@ -108,7 +108,6 @@ public class PlayerCharacterTurnCombatState : CombatState
         if(Physics.Raycast(attackRay, out hit, 10000f, this.StateMachine.ActorLayer.value))
         {
             EnemyCharacter hitCharacter = hit.collider.gameObject.GetComponent<EnemyCharacter>();
-            Debug.Log(hit.collider.name);
 
             if (hitCharacter == null) return; // hit nobody, we exit
 
@@ -117,6 +116,7 @@ public class PlayerCharacterTurnCombatState : CombatState
                 this.actionConfirmed = true;
                 this.StateMachine.CurrentActor.TakeAction(this.currentActionBase.ActionPointCost);
                 this.StateMachine.Log.AddNewResult(this.StateMachine.CurrentActor.AttackActor(hitCharacter));
+                hitCharacter.CheckIfDead();
                 this.StateMachine.TriggerActorUIUpdate();
                 this.ActionFinishedOrCanceled();
             }
@@ -131,6 +131,7 @@ public class PlayerCharacterTurnCombatState : CombatState
     public void TransitionToNextTurn()
     {
         this.StateMachine.Turn.EndTurn();
+        this.ActionFinishedOrCanceled();
         this.StateMachine.CurrentActor.ActorEndTurn();
         this.StateMachine.ChangeState<PickNextActorCombatState>();
     }

@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Actor : MonoBehaviour
 {
+    public event Action<string> ActorDied = delegate { };
+
     [SerializeField] ActorStats baseStats;
     [SerializeField] protected string actorName;
     [SerializeField] protected GameObject highlight;
@@ -93,11 +96,10 @@ public abstract class Actor : MonoBehaviour
     public AttackResult AttackActor(Actor otherActor)
     {
         int rollResult = GlobalRandom.AttackRoll();
-        int damageRoll = 0;
+        int damageRoll = GlobalRandom.RollDie(new Dice("1d8"));
         int finalDamage = 0;
         if (rollResult + this.Attack >= otherActor.Defense)
         {
-            damageRoll = GlobalRandom.RollDie(new Dice("1d8"));
             finalDamage = otherActor.TakeDamage(this.Damage + damageRoll);
         }
 
@@ -119,7 +121,6 @@ public abstract class Actor : MonoBehaviour
     {
         int damageToTake = Mathf.Clamp(damage - this.DamageReduction, 0, 9999);
         this.health -= damageToTake;
-        this.CheckIfDead();
         // play feedback
         return damageToTake;
     }
@@ -129,9 +130,15 @@ public abstract class Actor : MonoBehaviour
         if (this.Health <= 0)
         {
             Debug.Log($"{this.actorName} has died!");
-            // play feedback
-            // kill actor
+            this.KillActor();
         }
+    }
+
+    protected virtual void KillActor()
+    {
+        this.ActorDied?.Invoke(this.Name);
+        // play feedback
+        Destroy(this.gameObject);
     }
 
     public override string ToString()

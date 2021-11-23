@@ -37,9 +37,29 @@ public class CombatStateMachine : StateMachine
         }
     }
 
+    private List<Actor> allActors = new List<Actor>();
+
     private void Start()
     {
         this.ChangeState<SetupCombatGameState>();
+        this.allActors = new List<Actor>(FindObjectsOfType<Actor>());
+        foreach (Actor a in this.allActors)
+        {
+            a.ActorDied += OnActorDeath;
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (Actor a in this.allActors)
+        {
+            a.ActorDied -= OnActorDeath;
+        }
+    }
+
+    private void OnActorDeath(string name)
+    {
+        this.Log.AddNewResult(new DeathResult() { actorName = name });
     }
 
     public void TriggerNewTurn()
