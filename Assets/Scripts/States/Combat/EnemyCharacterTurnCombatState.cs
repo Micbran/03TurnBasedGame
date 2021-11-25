@@ -31,6 +31,15 @@ public class EnemyCharacterTurnCombatState : CombatState
         {
             this.EnemyEndTurn();
         }
+        else
+        {
+            Result potentialResult = this.currentAI.IntelligenceTick();
+            if (potentialResult != null)
+            {
+                this.StateMachine.Log.AddNewResult(potentialResult as AttackResult);
+            }
+            this.StateMachine.TriggerActorUIUpdate();
+        }
     }
 
     public override void OnExit()

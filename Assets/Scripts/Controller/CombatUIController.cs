@@ -4,9 +4,11 @@ using UnityEngine.UI;
 
 public class CombatUIController : MonoBehaviour
 {
-    [SerializeField] private Text textUI = null;
+    [SerializeField] private TextFade errorText = null;
     [SerializeField] public CombatStateMachine stateMachine = null;
     [SerializeField] private PlayerUIManager playerUI = null;
+    [Space(10)]
+    [SerializeField] private AudioClip ErrorSoundEff;
 
 
     private void Awake()
@@ -28,6 +30,13 @@ public class CombatUIController : MonoBehaviour
         this.playerUI.OnActionsUpdated -= OnUIActionsUpdated;
     }
 
+    public void DisplayErrorMessage(string message, float duration = 3f)
+    {
+        AudioHelper.PlayClip2D(this.ErrorSoundEff, 1f);
+        this.errorText.gameObject.SetActive(true);
+        this.errorText.DisplayText(message, duration);
+    }
+
     private void OnNewTurnStarted()
     {
         this.playerUI.OnNewTurnBegan(this.stateMachine.CurrentActor);
@@ -41,40 +50,5 @@ public class CombatUIController : MonoBehaviour
     private void UpdateActorDisplay(Actor currentActor)
     {
         this.playerUI.UpdateActorDisplay(currentActor);
-    }
-
-    private void Update()
-    {
-        switch(stateMachine.CurrentState)
-        {
-            case PlayerCharacterTurnCombatState pct:
-                textUI.text = "Player turn...!";
-                textUI.color = Color.green;
-                break;
-            case EnemyCharacterTurnCombatState ect:
-                textUI.text = "Enemy turn...!";
-                textUI.color = Color.red;
-                break;
-            case PickNextActorCombatState pna:
-                textUI.text = "Pick actor state...!";
-                textUI.color = Color.blue;
-                break;
-            case SetupCombatGameState scg:
-                textUI.text = "Setup state...!";
-                textUI.color = Color.cyan;
-                break;
-            case LoseCombatState lcs:
-                textUI.text = "Lose state...!";
-                textUI.color = Color.black;
-                break;
-            case WinCombatState wcs:
-                textUI.text = "Win state...!";
-                textUI.color = Color.yellow;
-                break;
-            default:
-                textUI.text = "Unrecognized state.";
-                textUI.color = Color.cyan;
-                break;
-        }
     }
 }

@@ -9,7 +9,6 @@ public class LoseCombatState : CombatState
     public override void OnEnter()
     {
         this.finishSetup = false;
-        Debug.Log("Entering LoseCombatState.");
     }
 
     public override void Tick()
@@ -17,17 +16,8 @@ public class LoseCombatState : CombatState
         if (!this.finishSetup)
         {
             this.finishSetup = true;
-            StartCoroutine(LoseRoutine());
+            this.LoseGame();
         }
-    }
-
-    IEnumerator LoseRoutine()
-    {
-        Debug.Log("Losing game. . . . .");
-        yield return new WaitForSeconds(1f);
-
-        Debug.Log("Game lost!");
-        this.LoseGame();
     }
 
     private void LoseGame()
@@ -38,6 +28,5 @@ public class LoseCombatState : CombatState
     public override void OnExit()
     {
         this.finishSetup = false;
-        Debug.Log("Exiting LoseCombatState.");
     }
 }

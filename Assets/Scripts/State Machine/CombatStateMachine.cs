@@ -60,11 +60,30 @@ public class CombatStateMachine : StateMachine
     private void OnActorDeath(string name)
     {
         this.Log.AddNewResult(new DeathResult() { actorName = name });
+        this.Turn.RemoveDead();
+        this.CheckWinLoseCondition();
+    }
+
+    public bool CheckWinLoseCondition()
+    {
+        List<Actor> allLocalActors = new List<Actor>(FindObjectsOfType<Actor>());
+        if (allLocalActors.FindAll(a => a is PlayerCharacter && !a.isDead).Count == 0)
+        {
+            this.ChangeState<LoseCombatState>();
+            return true;
+        }
+        else if (allLocalActors.FindAll(a => a is EnemyCharacter && !a.isDead).Count == 0)
+        {
+            this.ChangeState<WinCombatState>();
+            return true;
+        }
+        return false;
     }
 
     public void TriggerNewTurn()
     {
         this.NewTurnStarted?.Invoke();
+        this.CheckWinLoseCondition();
     }
 
     public void TriggerActorUIUpdate()

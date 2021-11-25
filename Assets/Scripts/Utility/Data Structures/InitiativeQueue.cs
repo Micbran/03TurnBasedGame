@@ -51,6 +51,11 @@ public class InitiativeQueue
         this.actorQueue.Clear();
     }
 
+    public void ClearDead()
+    {
+        this.actorQueue = this.actorQueue.FindAll(a => !a.isDead);
+    }
+
     private void Readjust()
     {
         this.actorQueue.Sort(this.initComp);

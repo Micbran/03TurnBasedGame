@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class GlobalRandom
@@ -47,5 +48,10 @@ public static class GlobalRandom
     public static int AttackRoll()
     {
         return random.Next(1, 21);
+    }
+
+    public static T RandomFromList<T>(List<T> list) 
+    {
+        return list[random.Next(0, list.Count)];
     }
 }

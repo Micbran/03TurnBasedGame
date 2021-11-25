@@ -43,7 +43,6 @@ public class BasicMoveToPoint : MonoBehaviour
     private Vector3 CalculatePerFrameDestination()
     {
         return Vector3.Normalize(this.destination - this.transform.position) * this.moveSpeed * Time.deltaTime;
-
     }
 
     private void MouseClick(Ray ray)

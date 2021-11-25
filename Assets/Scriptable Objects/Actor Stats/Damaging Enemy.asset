@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f71e9c89f7ad504396dc69256de4112, type: 3}
-  m_Name: BasicStats
+  m_Name: Damaging Enemy
   m_EditorClassIdentifier: 
-  health: 20
+  health: 15
   defense: 11
-  attack: 5
-  damageBonus: 2
+  attack: 7
+  damageBonus: 5
   damageReduction: 0
-  initiativeBonus: 0
+  initiativeBonus: 4
   movement: 20
   actions:
   - {fileID: 11400000, guid: d1d12db6f2a6717488a27e36de1395a1, type: 2}

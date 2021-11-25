@@ -6,4 +6,13 @@ public abstract class ArtificialIntelligence : MonoBehaviour
     public bool TurnFinished => this.turnFinished;
 
     public abstract void Act();
+    public virtual Result IntelligenceTick()
+    {
+        return null;
+    }
+
+    protected void Awake()
+    {
+        this.turnFinished = false;
+    }
 }

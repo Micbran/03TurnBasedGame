@@ -2,14 +2,28 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(MoveToPoint))]
 public abstract class Actor : MonoBehaviour
 {
     public event Action<string> ActorDied = delegate { };
 
+    public bool isDead = false;
+
+    protected MoveToPoint movementHandler;
+    public MoveToPoint MovementHandler => this.movementHandler;
     [SerializeField] ActorStats baseStats;
     [SerializeField] protected string actorName;
     [SerializeField] protected GameObject highlight;
     [SerializeField] RectTransform targetingIndicator;
+    [SerializeField] ActorHealthbar healthbar;
+
+    [Space(10)]
+    [SerializeField] private AudioClip HitSoundEff;
+    [SerializeField] private AudioClip MissSoundEff;
+    [SerializeField] private AudioClip DeathSoundEff;
+
+    [Space(10)]
+    [SerializeField] private ParticleSystem OnHitParticles;
 
     protected int health;
     public int Health => this.health;
@@ -53,6 +67,9 @@ public abstract class Actor : MonoBehaviour
         this.movement = baseStats.Movement;
         this.actionPoints = 0;
         this.actions = this.baseStats.Actions;
+
+        this.movementHandler = this.GetComponent<MoveToPoint>();
+        this.healthbar.InitializeHealthbar(this.maxHealth);
     }
 
     public int RollInitiative()
@@ -63,6 +80,7 @@ public abstract class Actor : MonoBehaviour
 
     public void StartNewTurn()
     {
+        if (this.isDead) return;
         this.actionPoints = 3;
         this.highlight.SetActive(true);
     }
@@ -74,7 +92,8 @@ public abstract class Actor : MonoBehaviour
 
     public void UpdateTargetingCircle(float newRange)
     {
-        Vector3 scaleFactor = UIUtilities.ToMetersWorldspace(2000, newRange);
+        if (this.isDead) return;
+        Vector3 scaleFactor = UIUtilities.ToMetersWorldspace(500, newRange);
         this.targetingIndicator.localScale = scaleFactor;
     }
 
@@ -102,6 +121,10 @@ public abstract class Actor : MonoBehaviour
         {
             finalDamage = otherActor.TakeDamage(this.Damage + damageRoll);
         }
+        else
+        {
+            AudioHelper.PlayClip2D(this.MissSoundEff, 1.6f);
+        }
 
         return new AttackResult()
         {
@@ -121,7 +144,9 @@ public abstract class Actor : MonoBehaviour
     {
         int damageToTake = Mathf.Clamp(damage - this.DamageReduction, 0, 9999);
         this.health -= damageToTake;
-        // play feedback
+        this.healthbar.UpdateHealthbar(this.health);
+        AudioHelper.PlayClip2D(this.HitSoundEff, 1.0f);
+        Instantiate(this.OnHitParticles, this.transform.position, Quaternion.identity);
         return damageToTake;
     }
 
@@ -129,16 +154,16 @@ public abstract class Actor : MonoBehaviour
     {
         if (this.Health <= 0)
         {
-            Debug.Log($"{this.actorName} has died!");
             this.KillActor();
         }
     }
 
     protected virtual void KillActor()
     {
-        this.ActorDied?.Invoke(this.Name);
-        // play feedback
+        AudioHelper.PlayClip2D(this.DeathSoundEff, 1.0f);
+        this.isDead = true;
         Destroy(this.gameObject);
+        this.ActorDied?.Invoke(this.Name);
     }
 
     public override string ToString()

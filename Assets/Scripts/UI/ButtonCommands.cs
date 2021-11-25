@@ -27,16 +27,6 @@ public class ButtonCommands : MonoBehaviour
         this.centerOnCharacterButton.onClick.RemoveListener(this.CenterOnCharacter);
     }
 
-    public void TransitionToWin()
-    {
-        this.combatUI.stateMachine.ChangeState<WinCombatState>();
-    }
-
-    public void TransitionToLose()
-    {
-        this.combatUI.stateMachine.ChangeState<LoseCombatState>();
-    }
-
     public void EndTurn()
     {
         if (this.combatUI.stateMachine.CurrentState is PlayerCharacterTurnCombatState)

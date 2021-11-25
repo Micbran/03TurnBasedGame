@@ -33,6 +33,12 @@ public class TurnController : MonoBehaviour
         return this.actingEntities.Peek();
     }
 
+    public void RemoveDead()
+    {
+        this.actingEntities.ClearDead();
+        this.actedEntities = this.actedEntities.FindAll(a => !a.isDead);
+    }
+
     public void EndTurn()
     {
         Actor deq = this.actingEntities.Dequeue();

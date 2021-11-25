@@ -29,6 +29,10 @@ public class PlayerCharacterTurnCombatState : CombatState
 
     public override void Tick()
     {
+        if (this.currentActionBase?.ActionType == ActionType.Movement)
+        {
+            this.currentRange = this.currentActionBase.ActionRange - this.StateMachine.CurrentActor.MovementHandler.CurrentMovement;
+        }
         this.StateMachine.CurrentActor.UpdateTargetingCircle(this.currentRange);
     }
 
@@ -62,10 +66,14 @@ public class PlayerCharacterTurnCombatState : CombatState
             this.currentRange = this.currentActionBase.ActionRange;
             this.actionConfirmed = false;
             this.StateMachine.CurrentActor.UpdateTargetingCircle(this.currentRange);
+            if (action.ActionType == ActionType.Movement)
+            {
+                this.StateMachine.CurrentActor.MovementHandler.StartNewMoveAction(action.ActionRange);
+            }
         }
         else
         {
-            // display to user that they don't have enough AP
+            this.StateMachine.UI.DisplayErrorMessage("You don't have enough AP for that!");
         }
 
     }
@@ -93,18 +101,22 @@ public class PlayerCharacterTurnCombatState : CombatState
 
     private void HandleMovementClick(Ray moveRay)
     {
-        if (!this.actionConfirmed)
+        RaycastHit moveHit;
+        if (Physics.Raycast(moveRay, out moveHit, 10000f, this.StateMachine.CollisionLayer.value))
         {
-            this.actionConfirmed = true;
-            this.StateMachine.CurrentActor.TakeAction(this.currentActionBase.ActionPointCost);
+            this.StateMachine.CurrentActor.MovementHandler.SetNewDestination(moveHit.point);
+            if (!this.actionConfirmed)
+            {
+                this.actionConfirmed = true;
+                this.StateMachine.CurrentActor.TakeAction(this.currentActionBase.ActionPointCost);
+                this.StateMachine.TriggerActorUIUpdate();
+            }
         }
-
     }
 
     private void HandleAttackClick(Ray attackRay)
     {
         RaycastHit hit;
-        Debug.DrawLine(attackRay.origin, attackRay.direction * 1000, Color.red, 10f);
         if(Physics.Raycast(attackRay, out hit, 10000f, this.StateMachine.ActorLayer.value))
         {
             EnemyCharacter hitCharacter = hit.collider.gameObject.GetComponent<EnemyCharacter>();
@@ -132,6 +144,7 @@ public class PlayerCharacterTurnCombatState : CombatState
     {
         this.StateMachine.Turn.EndTurn();
         this.ActionFinishedOrCanceled();
+        this.StateMachine.CurrentActor.UpdateTargetingCircle(0f);
         this.StateMachine.CurrentActor.ActorEndTurn();
         this.StateMachine.ChangeState<PickNextActorCombatState>();
     }
